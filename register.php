@@ -5,15 +5,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
 
-    $sql = "INSERT INTO users (name, email, password)
-            VALUES ('$name', '$email', '$password')";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "Registration successful. <a href='login.php'>Login</a>";
+    // Check if passwords match
+    if ($password !== $confirm_password) {
+        echo "Passwords do not match";
     } else {
-        echo "Error: " . $conn->error;
+
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO users (name, email, password)
+                VALUES ('$name', '$email', '$hashed_password')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Registration successful. <a href='login.php'>Login</a>";
+        } else {
+            echo "Error: " . $conn->error;
+        }
     }
 }
 ?>
